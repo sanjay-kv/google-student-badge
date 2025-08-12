@@ -220,59 +220,14 @@ export default function Home() {
               <CardTitle>Preview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div
-                ref={templateRef}
-                className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden aspect-square shadow-2xl"
-                style={{ maxWidth: '500px', margin: '0 auto' }}
-              >
-                {/* Background Shapes */}
-                <div className="absolute top-0 right-0 w-48 h-72 bg-gradient-to-bl from-blue-500 to-blue-600 rounded-bl-[100px] opacity-90" />
-                <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-purple-500 to-purple-600 rounded-tl-[100px] opacity-90" />
-                
-                {/* Logo Area */}
-                <div className="absolute top-12 left-12">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-green-500 via-yellow-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <div className="w-8 h-8 bg-white rounded-lg transform rotate-45" />
-                  </div>
-                </div>
-
-                {/* Main Text */}
-                <div className="absolute top-32 left-12 space-y-2">
-                  <div className="text-6xl font-bold text-gray-800 leading-tight">
-                    Google
-                  </div>
-                  <div className="text-6xl font-bold text-gray-800 leading-tight">
-                    Student
-                  </div>
-                  <div className="text-6xl font-bold text-gray-800 leading-tight">
-                    Ambassador
-                  </div>
-                </div>
-
-                {/* Image Circle */}
-                <div className="absolute top-1/2 right-20 transform -translate-y-1/2">
-                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-200 shadow-2xl bg-gray-100">
-                      {uploadedImage ? (
-                        <img
-                          src={uploadedImage}
-                          alt="User"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-center text-gray-500 text-sm px-4">
-                          <div className="text-2xl mb-2">📸</div>
-                          <div>Your photo will appear here</div>
-                        </div>
-                      )}
-                  </div>
-                </div>
-
-                {/* Name */}
-                <div className="absolute bottom-32 right-20 text-center">
-                  <div className="text-xl font-bold text-gray-600 tracking-wide">
-                    {userName ? userName.toUpperCase() : 'YOUR NAME'}
-                  </div>
-                </div>
+              <div className="flex justify-center">
+                <img
+                  ref={templateRef}
+                  src="/Ambassador.png"
+                  alt="Google Student Ambassador Badge"
+                  className="max-w-full h-auto rounded-2xl shadow-2xl"
+                  style={{ maxWidth: '500px' }}
+                />
               </div>
             </CardContent>
           </Card>
