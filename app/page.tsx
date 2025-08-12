@@ -126,17 +126,25 @@ export default function Home() {
     // Generate the badge image first
     await generateBadgeImage();
     
-    const shareText = `🎉 Excited to share that I'm a Google Student Ambassador! 
+    const shareText = `Excited to share that I've been selected as a Google Student Ambassador
 
-As a Google Student Ambassador, I'm passionate about:
-✨ Building innovative tech solutions
-🌟 Empowering fellow students in technology
-🚀 Contributing to the developer community
-💡 Sharing knowledge and inspiring others
+In this role, I'll be:
+✨Turn Gemini AI from a name students know into a skill they master.
+✨ Inspire creative and practical AI projects.
+✨ Build a culture of innovation on campus.
 
-Ready to make an impact in the tech world! 
+Excited to turn this opportunity into a meaningful impact!
 
-#GoogleStudentAmbassador #TechLeadership #Innovation #StudentDeveloper #GoogleForEducation #TechCommunity #FutureLeaders #Programming #TechSkills #StudentLife`;
+This isn't just about AI 👇🏻
+
+it's about create, innovate, and lead the future. 🌟
+
+💡 want to join the movement?
+📍 Apply here → https://event.recodehive.com/gemini
+
+Let's shape the future, one project at a time. 🚀
+
+#googlegemini #pingnetwork #googlestudentambassador`;
 
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareText)}`;
     
