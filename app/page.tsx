@@ -234,12 +234,15 @@ export default function Home() {
                   
                   {/* User Photo Overlay */}
                   {uploadedImage && (
-                    <div className="absolute top-1/2 right-[10%] transform -translate-y-1/2">
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                    <div className="absolute top-[30%] right-[8%] transform -translate-y-1/2">
+                      <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden">
                         <img
                           src={uploadedImage}
                           alt="User"
                           className="w-full h-full object-cover"
+                          style={{
+                            clipPath: 'circle(50% at 50% 50%)'
+                          }}
                         />
                       </div>
                     </div>
@@ -247,8 +250,8 @@ export default function Home() {
                   
                   {/* User Name Overlay */}
                   {userName && (
-                    <div className="absolute bottom-[25%] right-[10%] text-center">
-                      <div className="text-sm sm:text-lg font-bold text-gray-700 tracking-wide bg-white/80 px-2 py-1 rounded backdrop-blur-sm">
+                    <div className="absolute bottom-[20%] right-[8%] text-center">
+                      <div className="text-lg sm:text-xl font-bold text-gray-800 tracking-wider uppercase">
                         {userName.toUpperCase()}
                       </div>
                     </div>
