@@ -221,13 +221,39 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="flex justify-center">
-                <img
+                <div 
                   ref={templateRef}
-                  src="/Ambassador.png"
-                  alt="Google Student Ambassador Badge"
-                  className="max-w-full h-auto rounded-2xl shadow-2xl"
+                  className="relative max-w-full rounded-2xl shadow-2xl overflow-hidden"
                   style={{ maxWidth: '500px' }}
-                />
+                >
+                  <img
+                    src="/Ambassador.png"
+                    alt="Google Student Ambassador Badge"
+                    className="w-full h-auto block"
+                  />
+                  
+                  {/* User Photo Overlay */}
+                  {uploadedImage && (
+                    <div className="absolute top-1/2 right-[10%] transform -translate-y-1/2">
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                        <img
+                          src={uploadedImage}
+                          alt="User"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* User Name Overlay */}
+                  {userName && (
+                    <div className="absolute bottom-[25%] right-[10%] text-center">
+                      <div className="text-sm sm:text-lg font-bold text-gray-700 tracking-wide bg-white/80 px-2 py-1 rounded backdrop-blur-sm">
+                        {userName.toUpperCase()}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
