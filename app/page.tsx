@@ -17,26 +17,11 @@ export default function Home() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Create a FormData object to send the file
-      const formData = new FormData();
-      formData.append('image', file);
-
-      // Save the image and update the state
-      fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          setUploadedImage('/Ambassador.png?t=' + Date.now()); // Add timestamp to force refresh
-        } else {
-          console.error('Failed to upload image');
-        }
-      })
-      .catch(error => {
-        console.error('Error uploading image:', error);
-      });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -110,7 +95,6 @@ export default function Home() {
         link.href = canvas.toDataURL();
         link.click();
       };
-      img.crossOrigin = 'anonymous'; // Allow cross-origin loading
       img.src = uploadedImage;
     } else {
       // Draw name without image
