@@ -5,22 +5,59 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Upload, Download, RotateCcw, Share2, Linkedin, Twitter } from 'lucide-react';
+import { Upload, Download, RotateCcw, Share2, Linkedin, Twitter, Loader2 } from 'lucide-react';
+import { removeBackground } from '@imgly/background-removal';
 
 export default function Home() {
   const [userName, setUserName] = useState('');
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const templateRef = useRef<HTMLDivElement>(null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Professional background removal using IMG.LY
+  const processImageWithBackgroundRemoval = async (imageFile: File): Promise<string> => {
+    try {
+      setIsProcessing(true);
+
+      // Use IMG.LY's background removal - works entirely in browser
+      const processedBlob = await removeBackground(imageFile);
+
+      // Convert blob to data URL
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(processedBlob);
+      });
+    } catch (error) {
+      console.error('Background removal failed:', error);
+      throw error;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string);
+      reader.onload = async (e) => {
+        const originalImageUrl = e.target?.result as string;
+        setUploadedImage(originalImageUrl);
+
+        // Process image for background removal
+        try {
+          const processedImageUrl = await processImageWithBackgroundRemoval(file);
+          setProcessedImage(processedImageUrl);
+        } catch (error) {
+          console.error('Failed to process image:', error);
+          // Fallback to original image if background removal fails
+          setProcessedImage(originalImageUrl);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -72,15 +109,15 @@ export default function Home() {
     ctx.fillText('Ambassador', 50, 520);
 
     return new Promise((resolve) => {
-      // Draw user image if uploaded
-      if (uploadedImage) {
+      // Draw user image with background removed if uploaded
+      if (processedImage || uploadedImage) {
         const img = new Image();
         img.onload = () => {
           ctx.save();
           ctx.beginPath();
-          ctx.arc(650, 350, 100, 0, Math.PI * 2);
+          ctx.arc(650, 350, 140, 0, Math.PI * 2);
           ctx.clip();
-          ctx.drawImage(img, 550, 250, 200, 200);
+          ctx.drawImage(img, 510, 210, 280, 280);
           ctx.restore();
 
           // Draw name
@@ -95,7 +132,7 @@ export default function Home() {
           setGeneratedImageUrl(dataUrl);
           resolve(dataUrl);
         };
-        img.src = uploadedImage;
+        img.src = processedImage || uploadedImage;
       } else {
         // Draw name without image
         if (userName) {
@@ -183,6 +220,8 @@ Let's shape the future, one project at a time. 🚀
   const handleReset = () => {
     setUserName('');
     setUploadedImage(null);
+    setProcessedImage(null);
+    setIsProcessing(false);
     setGeneratedImageUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -227,12 +266,23 @@ Let's shape the future, one project at a time. 🚀
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                   {uploadedImage ? (
                     <div className="space-y-4">
-                      <img
-                        src={uploadedImage}
-                        alt="Uploaded"
-                        className="w-32 h-32 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
-                      />
-                      <p className="text-sm text-gray-600">Photo uploaded successfully!</p>
+                      <div className="relative">
+                        <img
+                          src={processedImage || uploadedImage}
+                          alt="Uploaded"
+                          className="w-32 h-32 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
+                        />
+                        {isProcessing && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+                            <Loader2 className="h-8 w-8 text-white animate-spin" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {isProcessing ? 'Removing background...' :
+                         processedImage ? 'Background removed successfully!' :
+                         'Photo uploaded successfully!'}
+                      </p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -255,8 +305,16 @@ Let's shape the future, one project at a time. 🚀
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     className="mt-4"
+                    disabled={isProcessing}
                   >
-                    {uploadedImage ? 'Change Photo' : 'Choose Photo'}
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      uploadedImage ? 'Change Photo' : 'Choose Photo'
+                    )}
                   </Button>
                 </div>
               </div>
@@ -327,15 +385,20 @@ Let's shape the future, one project at a time. 🚀
                     className="w-full h-auto block"
                   />
                   
-                  {/* User Photo Overlay */}
-                  {uploadedImage && (
-                    <div className="absolute top-1/2 right-[10%] transform -translate-y-1/2">
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden">
+                  {/* User Photo Overlay with Background Removal - Larger Size like Fig 1 */}
+                  {(processedImage || uploadedImage) && (
+                    <div className="absolute top-[35%] right-[8%] transform -translate-y-1/2">
+                      <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden">
                         <img
-                          src={uploadedImage}
+                          src={processedImage || uploadedImage}
                           alt="User"
                           className="w-full h-full object-cover"
                         />
+                        {isProcessing && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+                            <Loader2 className="h-8 w-8 text-white animate-spin" />
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
