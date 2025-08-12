@@ -360,6 +360,47 @@ Let's shape the future, one project at a time. 🚀
           width="800"
           height="800"
         />
+
+        {/* Footer */}
+        <footer className="mt-16 border-t border-gray-200 pt-8 pb-6">
+          <div className="text-center space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Need Help? Reach Out to Us</h3>
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-800">Tech Related Queries</h4>
+                <a 
+                  href="mailto:studentambassador@aiskillshouse.com"
+                  className="text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  studentambassador@aiskillshouse.com
+                </a>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-800">All Other Inquiries</h4>
+                <a 
+                  href="mailto:ping_googlesupport@pingnetwork.in"
+                  className="text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  ping_googlesupport@pingnetwork.in
+                </a>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-800">Learn More</h4>
+                <a 
+                  href="https://aiskillshouse.com/index"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  Visit AI Skills House
+                </a>
+              </div>
+            </div>
+            <div className="pt-4 text-sm text-gray-500">
+              <p>© 2024 Google Student Ambassador Program. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
