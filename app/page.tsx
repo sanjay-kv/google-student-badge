@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Upload, Download, RotateCcw, Share2, Linkedin } from 'lucide-react';
+import { Upload, Download, RotateCcw, Share2, Linkedin, Twitter } from 'lucide-react';
 
 export default function Home() {
   const [userName, setUserName] = useState('');
@@ -151,6 +151,35 @@ Let's shape the future, one project at a time. 🚀
     window.open(linkedInUrl, '_blank', 'width=600,height=600');
   };
 
+  const handleTwitterShare = async () => {
+    // Generate the badge image first
+    await generateBadgeImage();
+    
+    const shareText = `Excited to share that I've been selected as a Google Student Ambassador
+
+In this role, I'll be:
+✨Turn Gemini AI from a name students know into a skill they master.
+✨ Inspire creative and practical AI projects.
+✨ Build a culture of innovation on campus.
+
+Excited to turn this opportunity into a meaningful impact!
+
+This isn't just about AI 👇🏻
+
+it's about create, innovate, and lead the future. 🌟
+
+💡 want to join the movement?
+📍 Apply here → https://event.recodehive.com/gemini
+
+Let's shape the future, one project at a time. 🚀
+
+#googlegemini #pingnetwork #googlestudentambassador`;
+
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`;
+    
+    window.open(twitterUrl, '_blank', 'width=600,height=600');
+  };
+
   const handleReset = () => {
     setUserName('');
     setUploadedImage(null);
@@ -252,7 +281,7 @@ Let's shape the future, one project at a time. 🚀
               </div>
 
               {/* LinkedIn Share Button */}
-              <div className="pt-4 border-t">
+              <div className="pt-4 border-t space-y-3">
                 <Button
                   onClick={handleLinkedInShare}
                   disabled={!userName && !uploadedImage}
@@ -262,8 +291,19 @@ Let's shape the future, one project at a time. 🚀
                   <Linkedin className="h-5 w-5 mr-2" />
                   Share on LinkedIn
                 </Button>
-                <p className="text-sm text-gray-500 mt-2 text-center">
-                  Share your Google Student Ambassador achievement with your network
+                
+                <Button
+                  onClick={handleTwitterShare}
+                  disabled={!userName && !uploadedImage}
+                  className="w-full bg-[#1DA1F2] hover:bg-[#1a91da] text-white"
+                  size="lg"
+                >
+                  <Twitter className="h-5 w-5 mr-2" />
+                  Share on Twitter
+                </Button>
+                
+                <p className="text-sm text-gray-500 text-center">
+                  Share your Google Student Ambassador achievement with your networks
                 </p>
               </div>
             </CardContent>
