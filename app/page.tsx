@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Upload, Download, RotateCcw, Share2, Linkedin, Twitter, Loader2 } from 'lucide-react';
-import { removeBackground } from '@imgly/background-removal';
+import * as bodyPix from '@tensorflow-models/body-pix';
+import '@tensorflow/tfjs';
 
 export default function Home() {
   const [userName, setUserName] = useState('');
@@ -59,15 +60,39 @@ export default function Home() {
       setIsProcessing(true);
       // Resize image before background removal
       const resizedBlob = await resizeImage(imageFile, 512);
-      // Use IMG.LY's background removal - works entirely in browser, use 'isnet_quint8' model for fastest speed
-      const processedBlob = await removeBackground(resizedBlob, { model: 'isnet_quint8' });
-      // Convert blob to data URL
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(processedBlob);
+      // Convert blob to image
+      const img = new window.Image();
+      const imgURL = URL.createObjectURL(resizedBlob);
+      img.src = imgURL;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
       });
+      // Load BodyPix model
+      const net = await bodyPix.load();
+      // Segment person from image
+      const segmentation = await net.segmentPerson(img);
+      // Create canvas and draw original image
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      // Get image data
+      const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+      if (imageData && segmentation.data) {
+        for (let i = 0; i < segmentation.data.length; i++) {
+          if (segmentation.data[i] === 0) {
+            // Set alpha to 0 for background
+            imageData.data[i * 4 + 3] = 0;
+          }
+        }
+        ctx?.putImageData(imageData, 0, 0);
+      }
+      // Convert canvas to data URL
+      const dataUrl = canvas.toDataURL('image/png');
+      URL.revokeObjectURL(imgURL);
+      return dataUrl;
     } catch (error) {
       console.error('Background removal failed:', error);
       throw error;
