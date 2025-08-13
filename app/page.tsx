@@ -5,22 +5,94 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Upload, Download, RotateCcw, Share2, Linkedin, Twitter } from 'lucide-react';
+import { Upload, Download, RotateCcw, Share2, Linkedin, Twitter, Loader2 } from 'lucide-react';
+import { removeBackground } from '@imgly/background-removal';
 
 export default function Home() {
   const [userName, setUserName] = useState('');
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const templateRef = useRef<HTMLDivElement>(null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Professional background removal using IMG.LY
+  // Resize image to max 512x512 before background removal
+  const resizeImage = (file: File, maxSize = 512): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          if (width > maxSize || height > maxSize) {
+            if (width > height) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            } else {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('Resize failed'));
+          }, 'image/png', 0.9);
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const processImageWithBackgroundRemoval = async (imageFile: File): Promise<string> => {
+    try {
+      setIsProcessing(true);
+      // Resize image before background removal
+      const resizedBlob = await resizeImage(imageFile, 512);
+      // Use IMG.LY's background removal - works entirely in browser, use 'isnet_quint8' model for fastest speed
+      const processedBlob = await removeBackground(resizedBlob, { model: 'isnet_quint8' });
+      // Convert blob to data URL
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(processedBlob);
+      });
+    } catch (error) {
+      console.error('Background removal failed:', error);
+      throw error;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string);
+      reader.onload = async (e) => {
+        const originalImageUrl = e.target?.result as string;
+        setUploadedImage(originalImageUrl);
+
+        // Process image for background removal
+        try {
+          const processedImageUrl = await processImageWithBackgroundRemoval(file);
+          setProcessedImage(processedImageUrl);
+        } catch (error) {
+          console.error('Failed to process image:', error);
+          // Fallback to original image if background removal fails
+          setProcessedImage(originalImageUrl);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -28,10 +100,8 @@ export default function Home() {
 
   const generateBadgeImage = async (): Promise<string> => {
     if (!templateRef.current) return '';
-
     const canvas = canvasRef.current;
     if (!canvas) return '';
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return '';
 
@@ -39,76 +109,71 @@ export default function Home() {
     canvas.width = 800;
     canvas.height = 800;
 
-    // Create background with gradient
-    const gradient = ctx.createLinearGradient(0, 0, 800, 800);
-    gradient.addColorStop(0, '#f8fafc');
-    gradient.addColorStop(1, '#e2e8f0');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 800, 800);
+    // Preview reference:
+    // Photo: absolute top-[44%] right-[0%], w-72 h-72 (288px)
+    // Name: absolute bottom-[26%] right-[9%]
 
-    // Draw the template background elements
-    // Top-right blue shape
-    ctx.beginPath();
-    ctx.fillStyle = '#3b82f6';
-    ctx.roundRect(600, 0, 200, 300, [0, 50, 0, 50]);
-    ctx.fill();
+    // Move image a little right and down, ensure spacing from name
+    const photoDiameter = 370;
+    const photoRadius = photoDiameter / 2;
+    // Move photo right and down, with extra padding from right and name
+    const photoCenterX = 800 - photoRadius - 10; // 10px padding from right (was 20)
+    const photoCenterY = canvas.height * 0.48; // move down from 0.44 to 0.48
 
-    // Bottom-right purple shape
-    ctx.beginPath();
-    ctx.fillStyle = '#8b5cf6';
-    ctx.roundRect(600, 600, 200, 200, [50, 0, 0, 0]);
-    ctx.fill();
+    // Decrease font size and move name a little further down
+    const nameX = 800 - (800 * 0.22); // right: 22%
+    const nameY = 800 - (800 * 0.25); // move down from 0.29 to 0.25
 
-    // Draw logo area (simplified)
-    ctx.fillStyle = '#374151';
-    ctx.font = 'bold 24px Inter';
-    ctx.fillText('📦', 50, 180);
-
-    // Draw main text
-    ctx.fillStyle = '#374151';
-    ctx.font = 'bold 72px Inter';
-    ctx.fillText('Google', 50, 320);
-    ctx.fillText('Student', 50, 420);
-    ctx.fillText('Ambassador', 50, 520);
-
+    // Draw the badge background image
     return new Promise((resolve) => {
-      // Draw user image if uploaded
-      if (uploadedImage) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(650, 350, 100, 0, Math.PI * 2);
-          ctx.clip();
-          ctx.drawImage(img, 550, 250, 200, 200);
-          ctx.restore();
+      const badgeImg = new window.Image();
+      badgeImg.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(badgeImg, 0, 0, canvas.width, canvas.height);
 
-          // Draw name
+        if (processedImage && !isProcessing) {
+          const userImg = new window.Image();
+          userImg.onload = () => {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(photoCenterX, photoCenterY, photoRadius, 0, Math.PI * 2);
+            ctx.clip();
+            // Draw image centered in the circle
+            ctx.drawImage(
+              userImg,
+              photoCenterX - photoRadius,
+              photoCenterY - photoRadius,
+              photoDiameter,
+              photoDiameter
+            );
+            ctx.restore();
+
+            // Draw name overlay
+            if (userName) {
+              ctx.fillStyle = '#374151';
+              ctx.font = 'bold 20px Inter'; // even smaller font
+              ctx.textAlign = 'center';
+              ctx.fillText(userName.toUpperCase(), nameX, nameY);
+            }
+            const dataUrl = canvas.toDataURL();
+            setGeneratedImageUrl(dataUrl);
+            resolve(dataUrl);
+          };
+          userImg.src = processedImage;
+        } else {
+          // Draw name overlay only
           if (userName) {
-            ctx.fillStyle = '#6b7280';
+            ctx.fillStyle = '#374151';
             ctx.font = 'bold 32px Inter';
             ctx.textAlign = 'center';
-            ctx.fillText(userName.toUpperCase(), 650, 500);
+            ctx.fillText(userName.toUpperCase(), nameX, nameY);
           }
-
           const dataUrl = canvas.toDataURL();
           setGeneratedImageUrl(dataUrl);
           resolve(dataUrl);
-        };
-        img.src = uploadedImage;
-      } else {
-        // Draw name without image
-        if (userName) {
-          ctx.fillStyle = '#6b7280';
-          ctx.font = 'bold 32px Inter';
-          ctx.textAlign = 'center';
-          ctx.fillText(userName.toUpperCase(), 650, 500);
         }
-
-        const dataUrl = canvas.toDataURL();
-        setGeneratedImageUrl(dataUrl);
-        resolve(dataUrl);
-      }
+      };
+      badgeImg.src = '/Ambassador.png';
     });
   };
 
@@ -183,6 +248,8 @@ Let's shape the future, one project at a time. 🚀
   const handleReset = () => {
     setUserName('');
     setUploadedImage(null);
+    setProcessedImage(null);
+    setIsProcessing(false);
     setGeneratedImageUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -212,9 +279,9 @@ Let's shape the future, one project at a time. 🚀
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Your Name</Label>
+                <Label htmlFor="userNameInput">Your Name</Label>
                 <Input
-                  id="name"
+                  id="userNameInput"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   placeholder="Enter your name"
@@ -223,16 +290,32 @@ Let's shape the future, one project at a time. 🚀
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="photo">Profile Photo</Label>
+                <Label htmlFor="photoInput">Profile Photo</Label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                   {uploadedImage ? (
                     <div className="space-y-4">
-                      <img
-                        src={uploadedImage}
-                        alt="Uploaded"
-                        className="w-32 h-32 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
-                      />
-                      <p className="text-sm text-gray-600">Photo uploaded successfully!</p>
+                      <div className="relative">
+                        <img
+                          src={processedImage || uploadedImage}
+                          alt="Uploaded"
+                          className="w-32 h-32 object-cover rounded-full mx-auto border-4 border-white shadow-lg"
+                        />
+                        {isProcessing && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-full">
+                            <Loader2 className="h-5 w-5 text-gray-500 animate-spin" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-1 text-blue-500 animate-spin inline-block" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>Photo uploaded successfully!</> 
+                        )}
+                      </p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -255,6 +338,7 @@ Let's shape the future, one project at a time. 🚀
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     className="mt-4"
+                    disabled={isProcessing}
                   >
                     {uploadedImage ? 'Change Photo' : 'Choose Photo'}
                   </Button>
@@ -326,24 +410,22 @@ Let's shape the future, one project at a time. 🚀
                     alt="Google Student Ambassador Badge"
                     className="w-full h-auto block"
                   />
-                  
-                  {/* User Photo Overlay */}
-                  {uploadedImage && (
-                    <div className="absolute top-1/2 right-[10%] transform -translate-y-1/2">
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden">
+                  {/* Show photo in badge only after processing completes */}
+                  {processedImage && !isProcessing && (
+                    <div className="absolute top-[44%] right-[0%] transform -translate-y-1/2">
+                      <div className="relative w-72 h-72 sm:w-64 sm:h-64 rounded-full overflow-hidden">
                         <img
-                          src={uploadedImage}
+                          src={processedImage ?? undefined}
                           alt="User"
                           className="w-full h-full object-cover"
                         />
                       </div>
                     </div>
                   )}
-                  
                   {/* User Name Overlay */}
                   {userName && (
-                    <div className="absolute bottom-[25%] right-[10%] text-center">
-                      <div className="text-sm sm:text-lg font-bold text-gray-700 tracking-wide">
+                    <div className="absolute bottom-[26%] right-[5%] text-center">
+                      <div className="text-sm sm:text-small font-bold text-gray-700 tracking-wide">
                         {userName.toUpperCase()}
                       </div>
                     </div>
