@@ -480,6 +480,33 @@ Let's shape the future, one project at a time. 🚀
             </div>
             <div className="pt-4 text-sm text-gray-500">
               <p>© This is created by community, no affiliation with any organization. For support reach out <a href="https://www.linkedin.com/in/sanjay-k-v/" className="text-blue-600 hover:text-blue-800 transition-colors">developer</a></p>
+
+              {/* Shareable Announcement Block */}
+              <div className="mt-8 p-4 bg-white rounded-lg shadow border border-gray-200 max-w-2xl mx-auto">
+                <h4 className="font-semibold mb-2 text-gray-900">Share your achievement:</h4>
+                <div className="relative">
+                  <textarea
+                    id="ambassador-share-text"
+                    readOnly
+                    className="w-full h-48 p-2 border rounded bg-gray-50 text-sm text-gray-800"
+                    value={`Excited to share that I've been selected as a Google Student Ambassador\n\nIn this role, I'll be:\n✨Turn Gemini AI from a name students know into a skill they master.\n✨ Inspire creative and practical AI projects.\n✨ Build a culture of innovation on campus.\n\nExcited to turn this opportunity into a meaningful impact!\n\nThis isn't just about AI 👇🏻\n\nit's about create, innovate, and lead the future. 🌟\n\n💡 want to join the movement?\n📍 Apply here → https://event.recodehive.com/gemini\n\nLet's shape the future, one project at a time. 🚀\n\n#googlegemini #pingnetwork #googlestudentambassador`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('ambassador-share-text') as HTMLTextAreaElement;
+                      if (textarea) {
+                        textarea.select();
+                        document.execCommand('copy');
+                      }
+                    }}
+                    className="absolute top-2 right-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs shadow"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <p className="mt-2 text-xs text-gray-500">Click 'Copy' and share this message with your friends!</p>
+              </div>
             </div>
           </div>
         </footer>
