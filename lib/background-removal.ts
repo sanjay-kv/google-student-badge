@@ -1,4 +1,4 @@
-import { removeBackground, Config } from '@imgly/background-removal';
+// Removed Node.js-specific and non-browser-safe imports
 
 export interface BackgroundRemovalOptions {
   onProgress?: (progress: number) => void;
@@ -12,42 +12,7 @@ export interface BackgroundRemovalOptions {
  * @returns Promise<Blob> - The processed image with transparent background
  */
 export async function removeImageBackground(
-  imageSource: File | Blob | string,
-  options: BackgroundRemovalOptions = {}
-): Promise<Blob> {
-  const { onProgress, onError } = options;
-
-  try {
-    // Configure the background removal with optimized settings
-    const config: Config = {
-      // Use the default model for best quality
-      model: 'medium',
-      // Enable progress tracking if callback provided
-      progress: onProgress ? (key: string, current: number, total: number) => {
-        const progress = Math.round((current / total) * 100);
-        onProgress(progress);
-      } : undefined,
-      // Optimize for web performance
-      output: {
-        format: 'image/png',
-        quality: 0.9,
-      },
-    };
-
-    // Remove background using IMG.LY's API
-    const blob = await removeBackground(imageSource, config);
-    
-    return blob;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error : new Error('Background removal failed');
-    
-    if (onError) {
-      onError(errorMessage);
-    }
-    
-    throw errorMessage;
-  }
-}
+// Removed non-browser-safe background removal implementation
 
 /**
  * Convert a File or Blob to a data URL for display
