@@ -236,9 +236,8 @@ Let's shape the future, one project at a time. 🚀
 
 #googlegemini #geminiai #googlestudentambassador`;
 
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareText)}`;
-    
-    window.open(linkedInUrl, '_blank', 'width=600,height=600');
+  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?text=${encodeURIComponent(shareText)}`;
+  window.open(linkedInUrl, '_blank', 'width=600,height=600');
   };
 
   const handleTwitterShare = async () => {
@@ -254,7 +253,7 @@ it's about create, innovate, and lead the future. 🌟
 
 #googlegemini @sanjay_kv_ #googlestudentambassador`;
 
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
     
     window.open(twitterUrl, '_blank', 'width=600,height=600');
   };
