@@ -469,21 +469,22 @@ Let's shape the future, one project at a time. 🚀
               <div className="space-y-2">
                 <h4 className="font-medium text-gray-800">Learn More</h4>
                 <a 
-                  href="https://aiskillshouse.com/index"
+                  href="https://www.recodehive.com/docs/docs/google-campus-ambassador-part-4"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 transition-colors"
                 >
-                  Visit AI Skills House
+                  Get Gemini PRO For Free
                 </a>
               </div>
             </div>
             <div className="pt-4 text-sm text-gray-500">
-              <p>© 2024 Google Student Ambassador Program. All rights reserved.</p>
+              <p>© This is created by community, no affiliation with any organization. For support reach out <a href="https://www.linkedin.com/in/sanjay-k-v/" className="text-blue-600 hover:text-blue-800 transition-colors">developer</a></p>
             </div>
           </div>
         </footer>
       </div>
     </div>
   );
+  
 }
