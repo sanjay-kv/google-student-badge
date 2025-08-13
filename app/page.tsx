@@ -279,6 +279,9 @@ it's about create, innovate, and lead the future. 🌟
           <p className="text-gray-600 text-lg">
             Create your personalized Google Student Ambassador template
           </p>
+          <p className="text-gray-600 text-lg">
+            Try using <a href="https://www.remove.bg/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">remove.bg</a> to remove background from your photo.
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -490,6 +493,7 @@ it's about create, innovate, and lead the future. 🌟
                   Get Gemini PRO For Free
                 </a>
               </div>
+              
             </div>
             <div className="pt-4 text-sm text-gray-500">
               <p>© This is created by community, no affiliation with any organization. For support reach out <a href="https://www.linkedin.com/in/sanjay-k-v/" className="text-blue-600 hover:text-blue-800 transition-colors">developer</a></p>
