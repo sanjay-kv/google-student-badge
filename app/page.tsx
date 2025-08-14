@@ -506,7 +506,7 @@ it's about create, innovate, and lead the future. 🌟
                     id="ambassador-share-text"
                     readOnly
                     className="w-full h-48 p-2 border rounded bg-gray-50 text-sm text-gray-800"
-                    value={`Excited to share that I've been selected as a Google Student Ambassador\n\nIn this role, I'll be:\n✨Turn Gemini AI from a name students know into a skill they master.\n✨ Inspire creative and practical AI projects.\n✨ Build a culture of innovation on campus.\n\nExcited to turn this opportunity into a meaningful impact!\n\nThis isn't just about AI 👇🏻\n\nit's about create, innovate, and lead the future. 🌟\n\n💡 want to join the movement?\n📍 Apply here → https://event.recodehive.com/gemini\n\nLet's shape the future, one project at a time. 🚀\n\n#googlegemini #pingnetwork #googlestudentambassador`}
+                    value={`Excited to share that I've been selected as a Google Student Ambassador\n\nIn this role, I'll be:\n✨Turn Gemini AI from a name students know into a skill they master.\n✨ Inspire creative and practical AI projects.\n✨ Build a culture of innovation on campus.\n\nExcited to turn this opportunity into a meaningful impact!\n\nThis isn't just about AI 👇🏻\n\nit's about create, innovate, and lead the future. 🌟\n\n💡 want to join the movement?\n📍 Apply here → https://event.recodehive.com/gemini\n\nLet's shape the future, one project at a time. 🚀\n\n#googlegemini #googlestudentambassador`}
                   />
                   <button
                     type="button"
